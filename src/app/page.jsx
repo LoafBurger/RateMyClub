@@ -1,20 +1,35 @@
 "use client";
 import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
+import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Home() {
   const [user] = useAuthState(auth);
   const router = useRouter();
+  const [userData, setUserData] = useState(null);
 
   console.log(user);
 
   useEffect(() => {
     if (!user) {
       router.replace("/sign-up");
+    } else {
+      //fetch user data from Firestore
+      const fetchUserData = async () => {
+        const userDoc = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDoc);
+
+        if (userSnap.exists()) {
+          setUserData(userSnap.data());
+        } else{
+          console.log("No user data found!");
+        }
+      };
+      fetchUserData();
     }
   }, [user, router]); // Run this effect when `user` or `router` changes.
 
@@ -84,7 +99,7 @@ export default function Home() {
       {/* Footer Section */}
       <footer className="bg-gray-800 p-4 text-center">
         <p className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved.
+          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved to OC
         </p>
       </footer>
     </div>

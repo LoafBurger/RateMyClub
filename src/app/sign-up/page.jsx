@@ -1,21 +1,33 @@
 "use client";
 import { useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
+import { auth, db } from "@/app/firebase/config";
+import { doc, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const [createUserWithEmailAndPassword] =
-    useCreateUserWithEmailAndPassword(auth); //return array
+  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth); //return array
+  const router = useRouter();
 
   const handleSignUp = async () => {
     try {
       const res = await createUserWithEmailAndPassword(email, password);
-      console.log({ res });
+      if (res?.user) {
+        const userDoc = doc(db, "users", res.user.uid);
+        await setDoc(userDoc, {
+          uid: res.user.uid,
+          email: res.user.email,
+          createdAt: new Date().toISOString(),
+        });
+      
+
+      console.log("User saved to Firestore: ", res.user);
       setEmail("");
       setPassword("");
+      router.push("/sign-in");  //redirect to sign-in page
+      }
     } catch (e) {
       console.log(e);
     }
