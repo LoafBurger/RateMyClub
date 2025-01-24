@@ -7,14 +7,14 @@ import { useRouter } from "next/navigation";
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  //iamaloaf123
+  //test account, testtest123
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter(); //reroute user after sign-in
 
   const handleSignIn = async () => {
     try {
       const res = await signInWithEmailAndPassword(email, password);
-      console.log({ res });
+      console.log(res);
       setEmail("");
       setPassword("");
       router.push("/");
