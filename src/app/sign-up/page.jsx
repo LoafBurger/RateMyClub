@@ -4,11 +4,13 @@ import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, db } from "@/app/firebase/config";
 import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth); //return array
+  const [createUserWithEmailAndPassword] =
+    useCreateUserWithEmailAndPassword(auth); //return array
   const router = useRouter();
 
   const handleSignUp = async () => {
@@ -21,12 +23,11 @@ const SignUp = () => {
           email: res.user.email,
           createdAt: new Date().toISOString(),
         });
-      
 
-      console.log("User saved to Firestore: ", res.user);
-      setEmail("");
-      setPassword("");
-      router.push("/sign-in");  //redirect to sign-in page
+        console.log("User saved to Firestore: ", res.user);
+        setEmail("");
+        setPassword("");
+        router.push("/sign-in"); //redirect to sign-in page
       }
     } catch (e) {
       console.log(e);
@@ -57,6 +58,12 @@ const SignUp = () => {
         >
           Sign Up
         </button>
+        <p className="text-gray-400 mt-4 text-center">
+          Already have an account?{" "}
+          <Link href="/sign-in" className="text-indigo-500 hover:underline">
+            Sign In
+          </Link>
+        </p>
       </div>
     </div>
   );
