@@ -1,38 +1,38 @@
 "use client";
 import Image from "next/image";
-import { useAuthState } from "react-firebase-hooks/auth";
+//import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 
 export default function Home() {
-  const [user] = useAuthState(auth);
+  const [user, setUser] = useState(null);
   const router = useRouter();
   const [userData, setUserData] = useState(null);
 
   console.log(user);
 
+  //check auth state on mount
   useEffect(() => {
-    if (!user) {
-      router.replace("/sign-up");
-    } else {
-      //fetch user data from Firestore
-      const fetchUserData = async () => {
-        const userDoc = doc(db, "users", user.uid);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) {
+        router.replace("/sign-up");
+      } else {
+        setUser(currentUser);
+        //fetch user data
+        const userDoc = doc(db, "users", currentUser.uid);
         const userSnap = await getDoc(userDoc);
-
         if (userSnap.exists()) {
           setUserData(userSnap.data());
-        } else{
+        } else {
           console.log("No user data found!");
         }
-      };
-      fetchUserData();
-    }
-  }, [user, router]); // Run this effect when `user` or `router` changes.
-
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
   if (!user) {
     // Optionally, you can return null or a loading spinner while the user is being redirected
     return null;
@@ -57,7 +57,8 @@ export default function Home() {
       <main className="flex-grow container mx-auto py-10 px-4">
         <div className="text-center mb-10">
           <p className="text-lg text-gray-400">
-            Explore and rate your favorite clubs. Share your experiences and help others discover great opportunities!
+            Explore and rate your favorite clubs. Share your experiences and
+            help others discover great opportunities!
           </p>
         </div>
 
@@ -67,7 +68,8 @@ export default function Home() {
           <div className="bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
             <h3 className="text-xl font-semibold mb-2">Explore Clubs</h3>
             <p className="text-gray-400 mb-4">
-              Browse through the list of clubs and find the ones that suit your interests.
+              Browse through the list of clubs and find the ones that suit your
+              interests.
             </p>
             <button className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500">
               Explore
@@ -77,7 +79,8 @@ export default function Home() {
           <div className="bg-gray-800 p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
             <h3 className="text-xl font-semibold mb-2">Rate a Club</h3>
             <p className="text-gray-400 mb-4">
-              Share your thoughts and rate your favorite clubs to help the community.
+              Share your thoughts and rate your favorite clubs to help the
+              community.
             </p>
             <button className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500">
               Rate Now
@@ -99,10 +102,10 @@ export default function Home() {
       {/* Footer Section */}
       <footer className="bg-gray-800 p-4 text-center">
         <p className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved to OC
+          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved to
+          OC
         </p>
       </footer>
     </div>
   );
-
 }
