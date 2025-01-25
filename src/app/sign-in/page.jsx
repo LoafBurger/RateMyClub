@@ -8,11 +8,16 @@ import Link from "next/link";
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); //To show validation or API errors
   //test account, testtest123
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter(); //reroute user after sign-in
 
   const handleSignIn = async () => {
+    if (!email || !password) {
+      setError("Please fill in both fields.");
+      return;
+    }
     try {
       const res = await signInWithEmailAndPassword(email, password);
       console.log(res);
@@ -21,13 +26,16 @@ const SignIn = () => {
       router.push("/");
     } catch (e) {
       console.error(e);
+      setError("Invalid email or password. Please Try again.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
+      <h1 className="text-white text-4xl font-bold mb-10">RateMyClub</h1>
       <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-96">
         <h1 className="text-white text-2xl mb-5">Sign In</h1>
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <input
           type="email"
           placeholder="Email"
