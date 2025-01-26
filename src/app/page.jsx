@@ -105,8 +105,7 @@ export default function Home() {
       {/* Footer Section */}
       <footer className="bg-gray-800 p-4 text-center">
         <p className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved to
-          OC
+          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved.
         </p>
       </footer>
     </div>

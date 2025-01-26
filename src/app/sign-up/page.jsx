@@ -18,6 +18,11 @@ const SignUp = () => {
       setError("Please fill in both fields.");
       return;
     }
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
     try {
       const res = await createUserWithEmailAndPassword(email, password);
       if (res?.user) {
@@ -36,7 +41,14 @@ const SignUp = () => {
       }
     } catch (e) {
       console.log(e);
-      setError("Error creating account. Please try again.");
+      //handle firebase errors
+      if (e.code == "auth/email-already-in-use") {
+        setError(
+          "This email is already registered. Please use a different email or sign in.",
+        );
+      } else {
+        setError("Error creating account. Please try again.");
+      }
     }
   };
 
