@@ -17,11 +17,9 @@ export default function Home() {
   //check auth state on mount
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
-        router.replace("/sign-up");
-      } else {
-        setUser(currentUser);
-        //fetch user data
+      setUser(currentUser);
+      if (currentUser) {
+        // Fetch user data
         const userDoc = doc(db, "users", currentUser.uid);
         const userSnap = await getDoc(userDoc);
         if (userSnap.exists()) {
@@ -32,11 +30,7 @@ export default function Home() {
       }
     });
     return () => unsubscribe();
-  }, [router]);
-  if (!user) {
-    // Optionally, you can return null or a loading spinner while the user is being redirected
-    return null;
-  }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
@@ -44,15 +38,24 @@ export default function Home() {
       <header className="bg-gray-800 p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">RateMyClub</h1>
-          <button
-            onClick={() => signOut(auth)}
-            className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
-          >
-            Log Out
-          </button>
+          {/* Display Sign In/Up button if not logged in */}
+          {!user ? (
+            <button
+              onClick={() => router.push("/sign-up")}
+              className="px-4 py-2 bg-white text-gray-900 rounded hover:bg-gray-200"
+            >
+              Sign In/Up
+            </button>
+          ) : (
+            <button
+              onClick={() => signOut(auth)}
+              className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+            >
+              Log Out
+            </button>
+          )}
         </div>
       </header>
-
       {/* Main Content */}
       <main className="flex-grow container mx-auto py-10 px-4">
         <div className="text-center mb-10">

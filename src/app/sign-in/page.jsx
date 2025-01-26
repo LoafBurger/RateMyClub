@@ -14,6 +14,7 @@ const SignIn = () => {
   const router = useRouter(); //reroute user after sign-in
 
   const handleSignIn = async () => {
+    setError("");
     if (!email || !password) {
       setError("Please fill in both fields.");
       return;
@@ -21,6 +22,10 @@ const SignIn = () => {
     try {
       const res = await signInWithEmailAndPassword(email, password);
       console.log(res);
+      if (!res) {
+        setError("Invalid email or password. Please try again.");
+        return;
+      }
       setEmail("");
       setPassword("");
       router.push("/");
