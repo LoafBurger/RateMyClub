@@ -35,16 +35,17 @@ export default function Home() {
 
   const cards = [
     {
-      title: "Explore Clubs",
-      description:
-        "Browse through the list of clubs and find the ones that suit your interests.",
-      buttonText: "Explore",
-    },
-    {
       title: "Rate a Club",
       description:
         "Share your thoughts and rate your favorite clubs to help the community.",
       buttonText: "Rate Now",
+    },
+
+    {
+      title: "Explore Clubs",
+      description:
+        "Browse through the list of clubs and find the ones that suit your interests.",
+      buttonText: "Explore",
     },
     {
       title: "My Reviews",
