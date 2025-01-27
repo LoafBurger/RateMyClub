@@ -111,7 +111,7 @@ export default function Home() {
             {/* Left Arrow */}
             <button
               onClick={handlePreviousCard}
-              className="absolute left-4 md:left-12 bg-gray-700 text-white rounded-full p-4 hover:bg-gray-600 transition-all z-10"
+              className="mr-4 bg-gray-700 text-white rounded-full p-4 hover:bg-gray-600 transition-all z-10"
             >
               &lt;
             </button>
@@ -142,7 +142,7 @@ export default function Home() {
             {/* Right Arrow */}
             <button
               onClick={handleNextCard}
-              className="absolute right-4 md:right-12 bg-gray-700 text-white rounded-full p-4 hover:bg-gray-600 transition-all z-10"
+              className="ml-4 bg-gray-700 text-white rounded-full p-4 hover:bg-gray-600 transition-all z-10"
             >
               &gt;
             </button>
