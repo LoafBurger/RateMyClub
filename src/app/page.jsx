@@ -106,7 +106,7 @@ export default function Home() {
         </p>
 
         {/* Card Carousel Section */}
-        <section className="py-16">
+        <section className="py-16 mt-32">
           <div className="relative flex items-center justify-center w-full">
             {/* Left Arrow */}
             <button
