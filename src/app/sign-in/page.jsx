@@ -67,6 +67,11 @@ const SignIn = () => {
             Sign Up
           </Link>
         </p>
+        <p className="text-gray-400 mt-2 text-center">
+          <Link href="/" className="text-indigo-500 hover:underline">
+            Return to Home
+          </Link>
+        </p>
       </div>
     </div>
   );

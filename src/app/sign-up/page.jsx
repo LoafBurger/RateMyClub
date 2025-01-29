@@ -10,7 +10,8 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); //To show validation or API errors
-  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth); //return array
+  const [createUserWithEmailAndPassword] =
+    useCreateUserWithEmailAndPassword(auth); //return array
   const router = useRouter();
 
   const handleSignUp = async () => {
@@ -82,6 +83,11 @@ const SignUp = () => {
           Already have an account?{" "}
           <Link href="/sign-in" className="text-indigo-500 hover:underline">
             Sign In
+          </Link>
+        </p>
+        <p className="text-gray-400 mt-2 text-center">
+          <Link href="/" className="text-indigo-500 hover:underline">
+            Return to Home
           </Link>
         </p>
       </div>
