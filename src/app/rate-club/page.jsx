@@ -1,17 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { auth, db } from "@/app/firebase/config";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function RateClub() {
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+  console.log(user);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const [formData, setFormData] = useState({
     university: "",
     clubName: "",
     category: "",
-    overallRating: 5,
-    Organization: 5,
-    SocialEnvironment: 5,
-    ValueForMoney: 5,
-    Networking: 5,
-    EventQuality: 5,
+    overallRating: 0,
+    Organization: 0,
+    SocialEnvironment: 0,
+    ValueForMoney: 0,
+    Networking: 0,
+    EventQuality: 0,
     reviewTitle: "",
     detailedReview: "",
     pros: "",
@@ -46,15 +62,43 @@ export default function RateClub() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900 text-white p-6">
-      <header className="text-center py-6">
+    <div className="min-h-screen flex flex-col bg-gray-900 text-white">
+      <header className="w-full bg-gray-800 p-4 shadow-lg">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 
+            className="text-2xl font-bold cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            RMC
+          </h1>
+          {!user ? (
+            <button
+              onClick={() => router.push("/sign-up")}
+              className="px-4 py-2 bg-white text-gray-900 rounded hover:bg-gray-200"
+            >
+              Sign In/Up
+            </button>
+          ) : (
+            <button
+              onClick={() => signOut(auth)}
+              className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+            >
+              Log Out
+            </button>
+          )}
+        </div>
+      </header>
+
+      <header className="text-center py-6 mt-6">
         <h1 className="text-3xl font-bold">Rate a Club</h1>
-        <p className="text-gray-400">Share your experience with the community!</p>
+        <p className="text-gray-400">
+          Share your experience with the community!
+        </p>
       </header>
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-2xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg"
+        className="max-w-2xl mx-auto bg-gray-800 p-6 rounded-lg shadow-lg mb-3.5"
       >
         {/* Club Information */}
         <div className="mb-4">
@@ -114,24 +158,28 @@ export default function RateClub() {
           />
         </div>
 
-        {["Organization", "SocialEnvironment", "ValueForMoney", "Networking", "EventQuality"].map(
-          (field, index) => (
-            <div key={index} className="mb-4">
-              <label className="block mb-2">
-                {field.replace(/([A-Z])/g, " $1").trim()} (1-10)
-              </label>
-              <input
-                type="number"
-                name={field}
-                min="1"
-                max="10"
-                value={formData[field]}
-                onChange={handleChange}
-                className="w-full p-2 rounded bg-gray-700"
-              />
-            </div>
-          )
-        )}
+        {[
+          "Organization",
+          "SocialEnvironment",
+          "ValueForMoney",
+          "Networking",
+          "EventQuality",
+        ].map((field, index) => (
+          <div key={index} className="mb-4">
+            <label className="block mb-2">
+              {field.replace(/([A-Z])/g, " $1").trim()} (1-10)
+            </label>
+            <input
+              type="number"
+              name={field}
+              min="1"
+              max="10"
+              value={formData[field]}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-gray-700"
+            />
+          </div>
+        ))}
 
         {/* Review Details */}
         <div className="mb-4">
@@ -230,4 +278,3 @@ export default function RateClub() {
     </div>
   );
 }
-

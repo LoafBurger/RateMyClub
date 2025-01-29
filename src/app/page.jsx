@@ -80,7 +80,12 @@ export default function Home() {
       {/* Header Section */}
       <header className="bg-gray-800 p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">RMC</h1>
+          <h1 
+            className="text-2xl font-bold cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            RMC
+          </h1>
           {!user ? (
             <button
               onClick={() => router.push("/sign-up")}
