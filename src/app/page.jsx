@@ -39,6 +39,7 @@ export default function Home() {
       description:
         "Share your thoughts and rate your favorite clubs to help the community.",
       buttonText: "Rate Now",
+      link: "/rate-club", // Add the link to the rating page
     },
 
     {
@@ -132,7 +133,10 @@ export default function Home() {
                   >
                     <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
                     <p className="text-gray-400 mb-4">{card.description}</p>
-                    <button className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500">
+                    <button 
+                      onClick={() => router.push(card.link)} 
+                      className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500"
+                    >
                       {card.buttonText}
                     </button>
                   </div>
