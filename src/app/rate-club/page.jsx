@@ -312,6 +312,12 @@ export default function RateClub() {
           Submit Review
         </button>
       </form>
+      {/* Footer - Stuck to Bottom */}
+      <footer className="bg-gray-800 p-4 text-center mt-auto">
+        <p className="text-gray-500 text-sm">
+          &copy; {new Date().getFullYear()} RateMyClub. All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }
