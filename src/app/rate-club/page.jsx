@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function RateClub() {
   const [user, setUser] = useState(null);
@@ -56,8 +56,44 @@ export default function RateClub() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      alert("You must be logged in to submit a review.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "reviews"), {
+        userId: user.uid, // Store the user ID
+        userEmail: user.email, // Optional: Store user's email
+        ...formData, // Store all form data
+        timestamp: serverTimestamp(), // Add a timestamp
+      });
+
+      alert("Review submitted successfully!");
+      setFormData({
+        university: "",
+        clubName: "",
+        category: "",
+        overallRating: 0,
+        Organization: 0,
+        SocialEnvironment: 0,
+        ValueForMoney: 0,
+        Networking: 0,
+        EventQuality: 0,
+        reviewTitle: "",
+        detailedReview: "",
+        pros: "",
+        cons: "",
+        recommend: false,
+        isMember: false,
+        role: "",
+      });
+    } catch (error) {
+      console.error("Error submitting review:", error.message);
+      alert("Failed to submit review. Please try again.");
+    }
     console.log("Submitted Data:", formData);
   };
 
@@ -65,7 +101,7 @@ export default function RateClub() {
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       <header className="w-full bg-gray-800 p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 
+          <h1
             className="text-2xl font-bold cursor-pointer"
             onClick={() => router.push("/")}
           >
