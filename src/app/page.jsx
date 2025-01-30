@@ -47,6 +47,7 @@ export default function Home() {
       description:
         "Browse through the list of clubs and find the ones that suit your interests.",
       buttonText: "Explore",
+      link: "explore-page",
     },
     {
       title: "My Reviews",
