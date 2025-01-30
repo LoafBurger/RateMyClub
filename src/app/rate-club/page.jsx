@@ -90,6 +90,7 @@ export default function RateClub() {
         isMember: false,
         role: "",
       });
+      router.push("/");
     } catch (error) {
       console.error("Error submitting review:", error.message);
       alert("Failed to submit review. Please try again.");
