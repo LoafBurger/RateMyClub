@@ -69,8 +69,8 @@ export default function ExplorePage() {
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <div key={review.id} className="bg-gray-800 p-4 mb-4 rounded">
-              <h2 className="text-xl font-semibold">Review Title: {review.reviewTitle}</h2>
-              <p className="text-white mb-3">{review.detailedReview}</p>
+              <h2 className="text-xl font-semibold underline">Review Title: {review.reviewTitle}</h2>
+              <p className="text-white mb-3">"{review.detailedReview}"</p>
               <h2 className="text-lg font-semibold">Club: {review.clubName}</h2>
               <p className="text-gray-400">University: {review.university}</p>
               <p className="text-gray-400">Category: {review.category}</p>

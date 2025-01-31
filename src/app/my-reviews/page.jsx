@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -15,21 +15,38 @@ export default function MyReviews() {
       setUser(currentUser);
 
       if (currentUser) {
-        const reviewsRef = collection(db, "reviews");
-        const q = query(reviewsRef, where("userId", "==", currentUser.uid));
-        const querySnapshot = await getDocs(q);
-
-        const userReviews = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        setReviews(userReviews);
+        fetchReviews(currentUser.uid);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  // Function to fetch user's reviews
+  const fetchReviews = async (userId) => {
+    const reviewsRef = collection(db, "reviews");
+    const q = query(reviewsRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    const userReviews = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setReviews(userReviews);
+  };
+
+  // Function to delete a review
+  const handleDelete = async (reviewId) => {
+    try {
+      await deleteDoc(doc(db, "reviews", reviewId));
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review.id !== reviewId),
+      );
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
@@ -65,11 +82,11 @@ export default function MyReviews() {
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <div key={review.id} className="bg-gray-800 p-4 mb-4 rounded">
-              <h2 className="text-xl font-semibold">
-                Review Title: {review.reviewTitle}
+              <h2 className="text-xl font-semibold underline">
+                {review.reviewTitle}
               </h2>
-              <p className="text-white mb-3.5">{review.detailedReview}</p>
-              <h2 className="text-xl font-semibold">Other Stats:</h2>
+              <p className="text-white mb-3.5">"{review.detailedReview}"</p>
+              <h2 className="text-xl font-semibold">Other Metrics:</h2>
               <p className="text-white">University: {review.university}</p>
               <p className="text-white">Club: {review.clubName}</p>
               <p className="text-white">Category: {review.category}</p>
@@ -83,6 +100,13 @@ export default function MyReviews() {
               </p>
               <p className="text-white">Networking: {review.Networking}</p>
               <p className="text-white">Event Quality: {review.EventQuality}</p>
+              {/* Delete Button */}
+              <button
+                onClick={() => handleDelete(review.id)}
+                className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+              >
+                Delete
+              </button>
             </div>
           ))
         ) : (
