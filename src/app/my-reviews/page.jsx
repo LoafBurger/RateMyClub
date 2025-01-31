@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -34,6 +41,11 @@ export default function MyReviews() {
     }));
 
     setReviews(userReviews);
+  };
+
+  //Function to edit a review
+  const handleEdit = async (reviewId) => {
+    router.push(`/rate-club?edit=${reviewId}`);
   };
 
   // Function to delete a review
@@ -100,6 +112,13 @@ export default function MyReviews() {
               </p>
               <p className="text-white">Networking: {review.Networking}</p>
               <p className="text-white">Event Quality: {review.EventQuality}</p>
+              {/* Edit Button */}
+              <button
+                onClick={() => handleEdit(review.id)}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 mr-5"
+              >
+                Edit
+              </button>
               {/* Delete Button */}
               <button
                 onClick={() => handleDelete(review.id)}

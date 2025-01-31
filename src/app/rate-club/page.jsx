@@ -3,20 +3,29 @@ import { useState, useEffect } from "react";
 import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useSearchParams } from "next/navigation";
 
 export default function RateClub() {
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const reviewId = searchParams.get("edit");
 
   console.log(user);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (reviewId) {
+        const reviewDoc = await getDoc(doc(db, "reviews", reviewId));
+        if (reviewDoc.exists()) {
+          setFormData(reviewDoc.data()); // Prefill form with existing data
+        }
+      }
     });
     return () => unsubscribe();
-  }, []);
+  }, [reviewId]);
 
   const [formData, setFormData] = useState({
     university: "",
@@ -64,37 +73,53 @@ export default function RateClub() {
     }
 
     try {
-      await addDoc(collection(db, "reviews"), {
-        userId: user.uid, // Store the user ID
-        userEmail: user.email, // Optional: Store user's email
-        ...formData, // Store all form data
-        timestamp: serverTimestamp(), // Add a timestamp
-      });
+      if (reviewId) {
+        // Editing an existing review
+        await setDoc(doc(db, "reviews", reviewId), {
+          userId: user.uid,
+          userEmail: user.email,
+          ...formData,
+          timestamp: serverTimestamp(),
+        });
 
-      alert("Review submitted successfully!");
-      setFormData({
-        university: "",
-        clubName: "",
-        category: "",
-        overallRating: 0,
-        Organization: 0,
-        SocialEnvironment: 0,
-        ValueForMoney: 0,
-        Networking: 0,
-        EventQuality: 0,
-        reviewTitle: "",
-        detailedReview: "",
-        pros: "",
-        cons: "",
-        recommend: false,
-        isMember: false,
-        role: "",
-      });
-      router.push("/");
+        alert("Review updated successfully!");
+        router.push("/my-reviews"); // Redirect to "My Reviews" after editing
+      } else {
+        // Creating a new review
+        await addDoc(collection(db, "reviews"), {
+          userId: user.uid,
+          userEmail: user.email,
+          ...formData,
+          timestamp: serverTimestamp(),
+        });
+
+        alert("Review submitted successfully!");
+        setFormData({
+          university: "",
+          clubName: "",
+          category: "",
+          overallRating: 0,
+          Organization: 0,
+          SocialEnvironment: 0,
+          ValueForMoney: 0,
+          Networking: 0,
+          EventQuality: 0,
+          reviewTitle: "",
+          detailedReview: "",
+          pros: "",
+          cons: "",
+          recommend: false,
+          isMember: false,
+          role: "",
+        });
+
+        router.push("/"); // Redirect to Home after new review submission
+      }
     } catch (error) {
       console.error("Error submitting review:", error.message);
       alert("Failed to submit review. Please try again.");
     }
+
     console.log("Submitted Data:", formData);
   };
 
