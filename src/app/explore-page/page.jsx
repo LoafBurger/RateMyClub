@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 export default function ExplorePage() {
   const [user, setUser] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); //State for search input
   const router = useRouter();
 
   useEffect(() => {
@@ -33,6 +34,18 @@ export default function ExplorePage() {
 
     fetchReviews();
   }, []);
+
+  // Filtered reviews based on search input
+  const filteredReviews = reviews.filter((review) => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    return (
+      review.detailedReview.toLowerCase().includes(lowerCaseQuery) ||
+      review.reviewTitle.toLowerCase().includes(lowerCaseQuery) ||
+      review.clubName.toLowerCase().includes(lowerCaseQuery) ||
+      review.university.toLowerCase().includes(lowerCaseQuery) ||
+      review.category.toLowerCase().includes(lowerCaseQuery)
+    );
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
@@ -65,20 +78,30 @@ export default function ExplorePage() {
 
       {/* Content */}
       <main className="flex-grow container mx-auto p-6">
+        {/* Search Bar */}
+        <input
+          type="text"
+          placeholder="Search reviews..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-3 mb-6 rounded bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <h1 className="text-3xl font-bold mb-6">Explore Reviews</h1>
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
+        {filteredReviews.length > 0 ? (
+          filteredReviews.map((review) => (
             <div key={review.id} className="bg-gray-800 p-4 mb-4 rounded">
-              <h2 className="text-xl font-semibold underline">Review Title: {review.reviewTitle}</h2>
+              <h2 className="text-xl font-semibold underline">
+                {review.reviewTitle}
+              </h2>
               <p className="text-white mb-3">"{review.detailedReview}"</p>
               <h2 className="text-lg font-semibold">Club: {review.clubName}</h2>
-              <p className="text-gray-400">University: {review.university}</p>
-              <p className="text-gray-400">Category: {review.category}</p>
-              <p className="text-gray-400">Rating: {review.overallRating}/10</p>
+              <p className="text-white">University: {review.university}</p>
+              <p className="text-white">Category: {review.category}</p>
+              <p className="text-white">Rating: {review.overallRating}/10</p>
             </div>
           ))
         ) : (
-          <p className="text-gray-400">No reviews available yet...</p>
+          <p className="text-gray-400">No matching reviews found...</p>
         )}
       </main>
 
@@ -91,4 +114,3 @@ export default function ExplorePage() {
     </div>
   );
 }
-
