@@ -1,4 +1,4 @@
-![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-black?style=for-the-badge&logo=tailwind-css&logoColor=38B2AC) ![Chakra](https://shields.io/badge/chakra--ui-black?logo=chakraui&style=for-the-badge) ![Firebase](https://img.shields.io/badge/firebase-black?style=for-the-badge&logo=firebase&logoColor=orange)
+![Next.js](https://img.shields.io/badge/next.js-white?style=for-the-badge&logo=nextdotjs&logoColor=black) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-1a237e?style=for-the-badge&logo=tailwind-css&logoColor=38B2AC) ![Chakra](https://shields.io/badge/chakra--ui-212121?logo=chakraui&logoColor=84ffff&style=for-the-badge) ![Firebase](https://img.shields.io/badge/firebase-b71c1c?style=for-the-badge&logo=firebase&logoColor=ffe57f)
 # RateMyClub
 RateMyClub is a web application designed to allow users to rate and review clubs, helping individuals make informed decisions about which clubs to join.
 
