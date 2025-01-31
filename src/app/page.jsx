@@ -45,7 +45,7 @@ export default function Home() {
     {
       title: "Explore Clubs",
       description:
-        "Browse through the list of clubs and find the ones that suit your interests.",
+        "Browse through a list of clubs and see what others have to say.",
       buttonText: "Explore",
       link: "explore-page",
     },

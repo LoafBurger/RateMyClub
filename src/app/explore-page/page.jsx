@@ -84,7 +84,7 @@ export default function ExplorePage() {
           placeholder="Search reviews..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-3 mb-6 rounded bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3 mb-6 rounded bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
         />
         <h1 className="text-3xl font-bold mb-6">Explore Reviews</h1>
         {filteredReviews.length > 0 ? (
