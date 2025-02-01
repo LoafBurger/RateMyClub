@@ -39,11 +39,11 @@ export default function ExplorePage() {
   const filteredReviews = reviews.filter((review) => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     return (
-      review.detailedReview.toLowerCase().includes(lowerCaseQuery) ||
       review.reviewTitle.toLowerCase().includes(lowerCaseQuery) ||
-      review.clubName.toLowerCase().includes(lowerCaseQuery) ||
       review.university.toLowerCase().includes(lowerCaseQuery) ||
-      review.category.toLowerCase().includes(lowerCaseQuery)
+      review.clubName.toLowerCase().includes(lowerCaseQuery) ||
+      review.category.toLowerCase().includes(lowerCaseQuery) || 
+      review.detailedReview.toLowerCase().includes(lowerCaseQuery) 
     );
   });
 
@@ -93,11 +93,21 @@ export default function ExplorePage() {
               <h2 className="text-xl font-semibold underline">
                 {review.reviewTitle}
               </h2>
-              <p className="text-white mb-3">"{review.detailedReview}"</p>
-              <h2 className="text-lg font-semibold">Club: {review.clubName}</h2>
+              <p className="text-white mb-3.5">"{review.detailedReview}"</p>
+              <h2 className="text-xl font-semibold">Other Metrics:</h2>
               <p className="text-white">University: {review.university}</p>
+              <p className="text-white">Club: {review.clubName}</p>
               <p className="text-white">Category: {review.category}</p>
               <p className="text-white">Rating: {review.overallRating}/10</p>
+              <p className="text-white">Organization: {review.Organization}</p>
+              <p className="text-white">
+                Social Environment: {review.SocialEnvironment}
+              </p>
+              <p className="text-white">
+                Value for Money: {review.ValueForMoney}
+              </p>
+              <p className="text-white">Networking: {review.Networking}</p>
+              <p className="text-white">Event Quality: {review.EventQuality}</p>
             </div>
           ))
         ) : (
