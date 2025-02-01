@@ -1,15 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function MyReviews() {
@@ -60,6 +53,16 @@ export default function MyReviews() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Redirect to home page after sign out
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       {/* Header */}
@@ -79,12 +82,15 @@ export default function MyReviews() {
               Sign In/Up
             </button>
           ) : (
-            <button
-              onClick={() => signOut(auth)}
-              className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
-            >
-              Log Out
-            </button>
+            <div className="flex items-center space-x-4">
+              <span className="text-white">{user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+              >
+                Log Out
+              </button>
+            </div>
           )}
         </div>
       </header>

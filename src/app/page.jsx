@@ -77,12 +77,22 @@ export default function Home() {
     return "0%";
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Redirect to home page after sign out
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       {/* Header Section */}
       <header className="bg-gray-800 p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 
+          <h1
             className="text-2xl font-bold cursor-pointer"
             onClick={() => router.push("/")}
           >
@@ -96,12 +106,15 @@ export default function Home() {
               Sign In/Up
             </button>
           ) : (
-            <button
-              onClick={() => signOut(auth)}
-              className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
-            >
-              Log Out
-            </button>
+            <div className="flex items-center space-x-4">
+              <span className="text-white">{user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+              >
+                Log Out
+              </button>
+            </div>
           )}
         </div>
       </header>
@@ -140,8 +153,8 @@ export default function Home() {
                   >
                     <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
                     <p className="text-gray-400 mb-4">{card.description}</p>
-                    <button 
-                      onClick={() => router.push(card.link)} 
+                    <button
+                      onClick={() => router.push(card.link)}
                       className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500"
                     >
                       {card.buttonText}

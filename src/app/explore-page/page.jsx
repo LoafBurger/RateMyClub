@@ -42,10 +42,20 @@ export default function ExplorePage() {
       review.reviewTitle.toLowerCase().includes(lowerCaseQuery) ||
       review.university.toLowerCase().includes(lowerCaseQuery) ||
       review.clubName.toLowerCase().includes(lowerCaseQuery) ||
-      review.category.toLowerCase().includes(lowerCaseQuery) || 
-      review.detailedReview.toLowerCase().includes(lowerCaseQuery) 
+      review.category.toLowerCase().includes(lowerCaseQuery) ||
+      review.detailedReview.toLowerCase().includes(lowerCaseQuery)
     );
   });
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Redirect to home page after sign out
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
@@ -66,12 +76,15 @@ export default function ExplorePage() {
               Sign In/Up
             </button>
           ) : (
-            <button
-              onClick={() => signOut(auth)}
-              className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
-            >
-              Log Out
-            </button>
+            <div className="flex items-center space-x-4">
+              <span className="text-white">{user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+              >
+                Log Out
+              </button>
+            </div>
           )}
         </div>
       </header>
