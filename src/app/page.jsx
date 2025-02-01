@@ -11,7 +11,6 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const router = useRouter();
   const [userData, setUserData] = useState(null);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   console.log(user);
 
@@ -56,26 +55,6 @@ export default function Home() {
       link: "my-reviews",
     },
   ];
-
-  const handleNextCard = () => {
-    setCurrentCardIndex((prevIndex) =>
-      prevIndex === cards.length - 1 ? 0 : prevIndex + 1,
-    );
-  };
-
-  const handlePreviousCard = () => {
-    setCurrentCardIndex((prevIndex) =>
-      prevIndex === 0 ? cards.length - 1 : prevIndex - 1,
-    );
-  };
-
-  const calculateTransform = () => {
-    // Adjust slide distances for each card
-    if (currentCardIndex === 0) return "2%";
-    if (currentCardIndex === 1) return "106%"; // Slightly more for second card
-    if (currentCardIndex === 2) return "210%"; // Even more for third card
-    return "0%";
-  };
 
   const handleLogout = async () => {
     try {
@@ -127,50 +106,24 @@ export default function Home() {
           others discover great opportunities!
         </p>
 
-        {/* Card Carousel Section */}
+        {/* Cards Display Section */}
         <section className="py-16 mt-32">
-          <div className="relative flex items-center justify-center w-full">
-            {/* Left Arrow */}
-            <button
-              onClick={handlePreviousCard}
-              className="mr-4 bg-gray-700 text-white rounded-full p-4 hover:bg-gray-600 transition-all z-10"
-            >
-              &lt;
-            </button>
-
-            {/* Cards */}
-            <div className="w-[384px] h-56 overflow-hidden relative">
+          <div className="flex items-center justify-center w-full space-x-8">
+            {cards.map((card, index) => (
               <div
-                className="absolute inset-0 flex transition-transform duration-500"
-                style={{
-                  transform: `translateX(-${calculateTransform()})`,
-                }}
+                key={index}
+                className="w-96 h-56 bg-gray-800 p-6 rounded-lg shadow-lg"
               >
-                {cards.map((card, index) => (
-                  <div
-                    key={index}
-                    className="w-96 h-full bg-gray-800 p-6 rounded-lg shadow-lg mx-2 flex-shrink-0"
-                  >
-                    <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
-                    <p className="text-gray-400 mb-4">{card.description}</p>
-                    <button
-                      onClick={() => router.push(card.link)}
-                      className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500"
-                    >
-                      {card.buttonText}
-                    </button>
-                  </div>
-                ))}
+                <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
+                <p className="text-gray-400 mb-4">{card.description}</p>
+                <button
+                  onClick={() => router.push(card.link)}
+                  className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500"
+                >
+                  {card.buttonText}
+                </button>
               </div>
-            </div>
-
-            {/* Right Arrow */}
-            <button
-              onClick={handleNextCard}
-              className="ml-4 bg-gray-700 text-white rounded-full p-4 hover:bg-gray-600 transition-all z-10"
-            >
-              &gt;
-            </button>
+            ))}
           </div>
         </section>
       </main>
