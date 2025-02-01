@@ -93,6 +93,15 @@ export default function Home() {
               >
                 Log Out
               </button>
+              {/* Conditionally render the Admin Panel button if the user is an admin */}
+              {userData && userData.role === "admin" && (
+                <button
+                  onClick={() => router.push("/admin-panel")}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                >
+                  Admin Panel - Approve Requests
+                </button>
+              )}
             </div>
           )}
         </div>
