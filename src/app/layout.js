@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "RateMyClub",
+  title: "RMC",
   description: "Created by OC :D",
 };
 
