@@ -2,14 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/app/firebase/config";
-import {
-  collection,
-  getDocs,
-  doc,
-  getDoc,
-  deleteDoc,
-  setDoc,
-} from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { collection, getDocs, doc, getDoc, deleteDoc, setDoc } from "firebase/firestore";
 
 export default function AdminPanel() {
   const [userData, setUserData] = useState(null);

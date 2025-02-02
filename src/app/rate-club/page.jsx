@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 
 export default function RateClub() {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null); //new state for storing the users role
   const router = useRouter();
   const searchParams = useSearchParams();
   const reviewId = searchParams.get("edit");
@@ -16,8 +17,18 @@ export default function RateClub() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (reviewId) {
+      if (currentUser) {
+        setUser(currentUser);
+        // Fetch user role from Firestore
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);  // Set the role
+        }
+      } else {
+        setUser(null);
+        setUserRole(null);  // Clear role if user is logged out
+      }      if (reviewId) {
         const reviewDoc = await getDoc(doc(db, "reviews", reviewId));
         if (reviewDoc.exists()) {
           setFormData(reviewDoc.data()); // Prefill form with existing data
@@ -113,7 +124,9 @@ export default function RateClub() {
           timestamp: serverTimestamp(),
         });
 
-        alert("Review submitted successfully - RMC admins will now review your submission!");
+        alert(
+          "Review submitted successfully - RMC admins will now review your submission!",
+        );
         setFormData({
           university: "",
           clubName: "",
@@ -169,6 +182,15 @@ export default function RateClub() {
               >
                 Log Out
               </button>
+              {/* Conditionally render the Admin Panel button if the user is an admin */}
+              {userRole === "admin" && (
+                <button
+                  onClick={() => router.push("/admin-panel")}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                >
+                  Admin Panel - Approve Requests
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -294,7 +316,6 @@ export default function RateClub() {
             />
           </div>
 
-
           <div className="mb-4 flex items-center">
             <label className="mr-3 text-lg">
               Would you recommend this club?
@@ -307,7 +328,6 @@ export default function RateClub() {
               className="w-6 h-6"
             />
           </div>
-
         </div>
 
         {/* Submit Button */}

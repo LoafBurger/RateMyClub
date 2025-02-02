@@ -1,26 +1,36 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function ExplorePage() {
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState(null); //state to store the user's role
   const [reviews, setReviews] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); //State for search input
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        // Fetch user role from Firestore
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role); // Set the user's role
+        }
+      } else {
+        setUser(null);
+        setUserRole(null); // Clear user and role if logged out
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  
+
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -88,7 +98,7 @@ export default function ExplorePage() {
                 Log Out
               </button>
               {/* Conditionally render the Admin Panel button if the user is an admin */}
-              {user && user.role === "admin" && (
+              {userRole === "admin" && (
                 <button
                   onClick={() => router.push("/admin-panel")}
                   className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
