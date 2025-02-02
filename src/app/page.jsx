@@ -110,7 +110,7 @@ export default function Home() {
       {/* Middle Section */}
       <main className="flex-grow container mx-auto py-16 px-4 text-center">
         <h1 className="text-5xl font-bold mb-4">RateMyClub</h1>
-        <p className="text-lg text-gray-300 mb-12">
+        <p className="text-lg text-gray-300 mb-8">
           Explore and rate your favorite clubs. Share your experiences and help
           others discover great opportunities!
         </p>

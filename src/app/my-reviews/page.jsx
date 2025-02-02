@@ -24,7 +24,7 @@ export default function MyReviews() {
 
   // Function to fetch user's reviews
   const fetchReviews = async (userId) => {
-    const reviewsRef = collection(db, "reviews");
+    const reviewsRef = collection(db, "approved-reviews");
     const q = query(reviewsRef, where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
 
@@ -117,7 +117,6 @@ export default function MyReviews() {
                 Value for Money: {review.ValueForMoney}
               </p>
               <p className="text-white">Networking: {review.Networking}</p>
-              <p className="text-white">Event Quality: {review.EventQuality}</p>
               {/* Edit Button */}
               <button
                 onClick={() => handleEdit(review.id)}

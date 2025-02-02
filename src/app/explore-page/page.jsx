@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function ExplorePage() {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); //State for search input
   const router = useRouter();
@@ -19,9 +20,11 @@ export default function ExplorePage() {
     return () => unsubscribe();
   }, []);
 
+  
+
   useEffect(() => {
     const fetchReviews = async () => {
-      const reviewsRef = collection(db, "reviews");
+      const reviewsRef = collection(db, "approved-reviews");
       const querySnapshot = await getDocs(reviewsRef);
 
       const fetchedReviews = querySnapshot.docs.map((doc) => ({
@@ -84,6 +87,15 @@ export default function ExplorePage() {
               >
                 Log Out
               </button>
+              {/* Conditionally render the Admin Panel button if the user is an admin */}
+              {user && user.role === "admin" && (
+                <button
+                  onClick={() => router.push("/admin-panel")}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                >
+                  Admin Panel - Approve Requests
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -120,11 +132,10 @@ export default function ExplorePage() {
                 Value for Money: {review.ValueForMoney}
               </p>
               <p className="text-white">Networking: {review.Networking}</p>
-              <p className="text-white">Event Quality: {review.EventQuality}</p>
             </div>
           ))
         ) : (
-          <p className="text-gray-400">No matching reviews found...</p>
+          <p className="text-gray-400">No reviews found...</p>
         )}
       </main>
 

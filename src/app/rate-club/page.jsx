@@ -113,7 +113,7 @@ export default function RateClub() {
           timestamp: serverTimestamp(),
         });
 
-        alert("Review submitted successfully!");
+        alert("Review submitted successfully - RMC admins will now review your submission!");
         setFormData({
           university: "",
           clubName: "",
@@ -251,7 +251,6 @@ export default function RateClub() {
             "SocialEnvironment",
             "ValueForMoney",
             "Networking",
-            "EventQuality",
           ].map((field, index) => (
             <div key={index} className="mb-4">
               <label className="block mb-2">
@@ -295,27 +294,6 @@ export default function RateClub() {
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block mb-2">Pros</label>
-            <input
-              type="text"
-              name="pros"
-              value={formData.pros}
-              onChange={handleChange}
-              className="w-full p-3 rounded bg-gray-700"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block mb-2">Cons</label>
-            <input
-              type="text"
-              name="cons"
-              value={formData.cons}
-              onChange={handleChange}
-              className="w-full p-3 rounded bg-gray-700"
-            />
-          </div>
 
           <div className="mb-4 flex items-center">
             <label className="mr-3 text-lg">
@@ -330,35 +308,6 @@ export default function RateClub() {
             />
           </div>
 
-          <div className="mb-4 flex items-center">
-            <label className="mr-3 text-lg">
-              Are you a current or former member?
-            </label>
-            <input
-              type="checkbox"
-              name="isMember"
-              checked={formData.isMember}
-              onChange={handleChange}
-              className="w-6 h-6"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block mb-2">Your Role in the Club</label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full p-3 rounded bg-gray-700"
-            >
-              <option value="">Select a role</option>
-              {roles.map((role, index) => (
-                <option key={index} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {/* Submit Button */}
