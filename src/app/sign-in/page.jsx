@@ -37,38 +37,40 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
-      <h1 className="text-white text-4xl font-bold mb-10">RateMyClub</h1>
-      <div className="bg-gray-800 p-10 rounded-lg shadow-xl w-96">
-        <h1 className="text-white text-2xl mb-5">Sign In</h1>
+      <h1 className="text-4xl font-bold text-white mb-8 flex items-center gap-2">
+        <span className="text-[#00a6fb]">RateMyClub</span>
+      </h1>
+      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Sign In</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
+          className="w-full p-4 mb-4 bg-gray-100 text-gray-900 rounded-full placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00a6fb]"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 bg-gray-700 rounded outline-none text-white placeholder-gray-500"
+          className="w-full p-4 mb-4 bg-gray-100 text-gray-900 rounded-full placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00a6fb]"
         />
         <button
           onClick={handleSignIn}
-          className="w-full p-3 bg-indigo-600 rounded text-white hover:bg-indigo-500"
+          className="w-full p-4 bg-[#00a6fb] text-white rounded-full hover:bg-blue-600 transition duration-300"
         >
           Sign In
         </button>
-        <p className="text-gray-400 mt-4 text-center">
+        <p className="text-gray-500 mt-6 text-center">
           Don't have an account?{" "}
-          <Link href="/sign-up" className="text-indigo-500 hover:underline">
+          <Link href="/sign-up" className="text-[#00a6fb] hover:underline">
             Sign Up
           </Link>
         </p>
-        <p className="text-gray-400 mt-2 text-center">
-          <Link href="/" className="text-indigo-500 hover:underline">
+        <p className="text-gray-500 mt-2 text-center">
+          <Link href="/" className="text-[#00a6fb] hover:underline">
             Return to Home
           </Link>
         </p>

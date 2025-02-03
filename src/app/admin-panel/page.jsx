@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/app/firebase/config";
 import { signOut } from "firebase/auth";
-import { collection, getDocs, doc, getDoc, deleteDoc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, deleteDoc, setDoc,
+} from "firebase/firestore";
 
 export default function AdminPanel() {
   const [userData, setUserData] = useState(null);
@@ -80,40 +81,41 @@ export default function AdminPanel() {
     return <div>Loading...</div>; // Show loading state while checking the role
   }
 
-  return (
+return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
-      {/* Header Section */}
-      <header className="bg-gray-800 p-4 shadow-lg">
+      {/* Header */}
+      <header className="bg-[#00a6fb] p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           <h1
-            className="text-2xl font-bold cursor-pointer"
+            className="text-3xl font-bold text-white cursor-pointer flex items-center gap-2"
             onClick={() => router.push("/")}
           >
-            RMC
+            <span className="text-white">RateMyClub</span>
           </h1>
           {!userData ? (
             <button
               onClick={() => router.push("/sign-up")}
-              className="px-4 py-2 bg-white text-gray-900 rounded hover:bg-gray-200"
+              className="px-6 py-2 bg-white text-[#00a6fb] rounded-full font-semibold hover:bg-blue-50 transition duration-300"
             >
               Sign In/Up
             </button>
           ) : (
             <div className="flex items-center space-x-4">
-              <span className="text-white">{userData.email}</span>
+              <span className="text-white bg-[#0087c1] px-4 py-2 rounded-full">
+                {userData.email}
+              </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+                className="px-4 py-2 bg-black rounded-full hover:bg-gray-800 transition duration-300 text-white"
               >
                 Log Out
               </button>
-              {/* Conditionally render the Admin Panel button if the user is an admin */}
-              {userData && userData.role === "admin" && (
+              {userData.role === "admin" && (
                 <button
                   onClick={() => router.push("/admin-panel")}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                  className="px-4 py-2 bg-white text-[#00a6fb] rounded-full hover:bg-blue-50 transition duration-300 font-semibold"
                 >
-                  Admin Panel - Approve Requests
+                  Admin Panel
                 </button>
               )}
             </div>
@@ -121,33 +123,35 @@ export default function AdminPanel() {
         </div>
       </header>
 
-      {/* Content Section */}
-      <main className="flex-grow container mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">Pending Reviews</h1>
+      {/* Content */}
+      <main className="flex-grow container mx-auto px-4 py-20 -mt-10 relative z-10">
+        <h1 className="text-4xl font-bold mb-8 text-[#00a6fb]">Pending Reviews</h1>
+
         {reviews.length > 0 ? (
           reviews.map((review) => (
-            <div key={review.id} className="bg-gray-800 p-4 mb-4 rounded">
-              <h2 className="text-xl font-semibold underline">
+            <div key={review.id} className="bg-gray-800 p-6 rounded-lg shadow-md mb-8">
+              <h2 className="text-2xl font-semibold text-[#00a6fb] underline mb-4">
                 {review.reviewTitle}
               </h2>
-              <p className="text-white mb-3.5">"{review.detailedReview}"</p>
-              <h2 className="text-xl font-semibold">Other Metrics:</h2>
-              <p className="text-white">University: {review.university}</p>
-              <p className="text-white">Club: {review.clubName}</p>
-              <p className="text-white">Category: {review.category}</p>
-              <p className="text-white">Rating: {review.overallRating}/10</p>
+              <p className="text-gray-400 mb-4">"{review.detailedReview}"</p>
+              <div className="space-y-2 text-gray-400">
+                <p>University: {review.university}</p>
+                <p>Club: {review.clubName}</p>
+                <p>Category: {review.category}</p>
+                <p>Rating: {review.overallRating}/10</p>
+              </div>
 
               {/* Approve and Deny Buttons */}
-              <div className="flex space-x-4 mt-4">
+              <div className="flex space-x-4 mt-6">
                 <button
                   onClick={() => handleApprove(review)}
-                  className="px-4 py-2 bg-green-600 rounded hover:bg-green-500"
+                  className="px-6 py-2 bg-[#00a6fb] rounded-full hover:bg-blue-600 transition duration-300 text-white"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => handleDeny(review)}
-                  className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+                  className="px-6 py-2 bg-red-600 rounded-full hover:bg-red-500 transition duration-300 text-white"
                 >
                   Deny
                 </button>
@@ -155,7 +159,7 @@ export default function AdminPanel() {
             </div>
           ))
         ) : (
-          <p className="text-gray-400">No pending reviews...</p>
+          <p className="text-gray-400">No pending reviews need to be approved...</p>
         )}
       </main>
 

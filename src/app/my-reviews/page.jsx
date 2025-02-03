@@ -1,7 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import { collection, query, where, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -53,7 +61,7 @@ export default function MyReviews() {
   // Function to delete a review
   const handleDelete = async (reviewId) => {
     try {
-      await deleteDoc(doc(db, "reviews", reviewId));
+      await deleteDoc(doc(db, "approved-reviews", reviewId));
       setReviews((prevReviews) =>
         prevReviews.filter((review) => review.id !== reviewId),
       );
@@ -75,37 +83,38 @@ export default function MyReviews() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       {/* Header */}
-      <header className="w-full bg-gray-800 p-4 shadow-lg mb-3.5">
+      <header className="w-full bg-[#00a6fb] p-4 shadow-lg mb-3.5">
         <div className="container mx-auto flex justify-between items-center">
           <h1
-            className="text-2xl font-bold cursor-pointer"
+            className="text-3xl font-bold text-white cursor-pointer flex items-center gap-2"
             onClick={() => router.push("/")}
           >
-            RMC
+            RateMyClub
           </h1>
           {!user ? (
             <button
               onClick={() => router.push("/sign-up")}
-              className="px-4 py-2 bg-white text-gray-900 rounded hover:bg-gray-200"
+              className="px-6 py-2 bg-white text-[#00a6fb] rounded-full font-semibold hover:bg-blue-50 transition duration-300"
             >
               Sign In/Up
             </button>
           ) : (
             <div className="flex items-center space-x-4">
-              <span className="text-white">{user.email}</span>
+              <span className="text-white bg-[#0087c1] px-4 py-2 rounded-full">
+                {user.email}
+              </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+                className="px-4 py-2 bg-black rounded-full hover:bg-gray-800 transition duration-300 text-white"
               >
                 Log Out
               </button>
-              {/* Conditionally render the Admin Panel button if the user is an admin */}
               {userRole === "admin" && (
                 <button
                   onClick={() => router.push("/admin-panel")}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                  className="px-4 py-2 bg-white text-[#00a6fb] rounded-full hover:bg-blue-50 transition duration-300 font-semibold"
                 >
-                  Admin Panel - Approve Requests
+                  Admin Panel
                 </button>
               )}
             </div>
@@ -113,42 +122,51 @@ export default function MyReviews() {
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-4">My Reviews</h1>
+      <main className="flex-grow container mx-auto p-6 pt-16">
+        <h1 className="text-4xl font-bold mb-8 text-[#00a6fb]">My Reviews</h1>
         {reviews.length > 0 ? (
           reviews.map((review) => (
-            <div key={review.id} className="bg-gray-800 p-4 mb-4 rounded">
-              <h2 className="text-xl font-semibold underline">
+            <div
+              key={review.id}
+              className="bg-white p-6 rounded-lg shadow-lg mb-8 text-gray-900"
+            >
+              <h2 className="text-2xl font-semibold underline text-[#00a6fb]">
                 {review.reviewTitle}
               </h2>
-              <p className="text-white mb-3.5">"{review.detailedReview}"</p>
-              <h2 className="text-xl font-semibold">Other Metrics:</h2>
-              <p className="text-white">University: {review.university}</p>
-              <p className="text-white">Club: {review.clubName}</p>
-              <p className="text-white">Category: {review.category}</p>
-              <p className="text-white">Rating: {review.overallRating}/10</p>
-              <p className="text-white">Organization: {review.Organization}</p>
-              <p className="text-white">
-                Social Environment: {review.SocialEnvironment}
-              </p>
-              <p className="text-white">
-                Value for Money: {review.ValueForMoney}
-              </p>
-              <p className="text-white">Networking: {review.Networking}</p>
-              {/* Edit Button */}
-              <button
-                onClick={() => handleEdit(review.id)}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 mr-5"
-              >
-                Edit
-              </button>
-              {/* Delete Button */}
-              <button
-                onClick={() => handleDelete(review.id)}
-                className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-              >
-                Delete
-              </button>
+              <p className="text-gray-700 my-4">"{review.detailedReview}"</p>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Other Metrics:</h3>
+                <p className="text-gray-800">University: {review.university}</p>
+                <p className="text-gray-800">Club: {review.clubName}</p>
+                <p className="text-gray-800">Category: {review.category}</p>
+                <p className="text-gray-800">
+                  Rating: {review.overallRating}/10
+                </p>
+                <p className="text-gray-800">
+                  Organization: {review.Organization}
+                </p>
+                <p className="text-gray-800">
+                  Social Environment: {review.SocialEnvironment}
+                </p>
+                <p className="text-gray-800">
+                  Value for Money: {review.ValueForMoney}
+                </p>
+                <p className="text-gray-800">Networking: {review.Networking}</p>
+              </div>
+              <div className="flex mt-6 space-x-4">
+                <button
+                  onClick={() => handleEdit(review.id)}
+                  className="px-6 py-2 bg-[#00a6fb] text-white rounded-full hover:bg-blue-600 transition duration-300"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(review.id)}
+                  className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-500 transition duration-300"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         ) : (
@@ -157,7 +175,8 @@ export default function MyReviews() {
           </p>
         )}
       </main>
-      {/* Footer - Stuck to Bottom */}
+
+      {/* Footer */}
       <footer className="bg-gray-800 p-4 text-center mt-auto">
         <p className="text-gray-500 text-sm">
           &copy; {new Date().getFullYear()} RateMyClub. All rights reserved.

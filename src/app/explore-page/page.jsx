@@ -30,8 +30,6 @@ export default function ExplorePage() {
     return () => unsubscribe();
   }, []);
 
-
-
   useEffect(() => {
     const fetchReviews = async () => {
       const reviewsRef = collection(db, "approved-reviews");
@@ -73,37 +71,38 @@ export default function ExplorePage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       {/* Header */}
-      <header className="bg-gray-800 p-4 shadow-lg">
+      <header className="bg-[#00a6fb] p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           <h1
-            className="text-2xl font-bold cursor-pointer"
+            className="text-3xl font-bold text-white cursor-pointer flex items-center gap-2"
             onClick={() => router.push("/")}
           >
-            RMC
+            <span className="text-white">RateMyClub</span>
           </h1>
           {!user ? (
             <button
               onClick={() => router.push("/sign-up")}
-              className="px-4 py-2 bg-white text-gray-900 rounded hover:bg-gray-200"
+              className="px-6 py-2 bg-white text-[#00a6fb] rounded-full font-semibold hover:bg-blue-50 transition duration-300"
             >
               Sign In/Up
             </button>
           ) : (
             <div className="flex items-center space-x-4">
-              <span className="text-white">{user.email}</span>
+              <span className="text-white bg-[#0087c1] px-4 py-2 rounded-full">
+                {user.email}
+              </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+                className="px-4 py-2 bg-black rounded-full hover:bg-gray-800 transition duration-300 text-white"
               >
                 Log Out
               </button>
-              {/* Conditionally render the Admin Panel button if the user is an admin */}
               {userRole === "admin" && (
                 <button
                   onClick={() => router.push("/admin-panel")}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                  className="px-4 py-2 bg-white text-[#00a6fb] rounded-full hover:bg-blue-50 transition duration-300 font-semibold"
                 >
-                  Admin Panel - Approve Requests
+                  Admin Panel
                 </button>
               )}
             </div>
@@ -111,37 +110,57 @@ export default function ExplorePage() {
         </div>
       </header>
 
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-[#0096d1] via-[#00a6fb] to-[#00a6fb] text-white pb-20 pt-10">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-6xl font-bold mb-6">Explore Reviews</h1>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Browse through club reviews and discover the best fit for you.
+          </p>
+        </div>
+      </div>
+
       {/* Content */}
-      <main className="flex-grow container mx-auto p-6">
+      <main className="flex-grow container mx-auto px-4 py-20 -mt-10 relative z-10">
         {/* Search Bar */}
         <input
           type="text"
           placeholder="Search reviews..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-3 mb-6 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full"
+          className="w-full p-4 mb-8 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00a6fb] rounded-full"
         />
-        <h1 className="text-3xl font-bold mb-6">Explore Reviews</h1>
+
+        {/* Review List */}
         {filteredReviews.length > 0 ? (
           filteredReviews.map((review) => (
-            <div key={review.id} className="bg-gray-800 p-4 mb-4 rounded">
-              <h2 className="text-xl font-semibold underline">
+            <div
+              key={review.id}
+              className="bg-white p-6 rounded-lg shadow-md mb-6 text-gray-900"
+            >
+              <h2 className="text-2xl font-semibold underline text-[#00a6fb]">
                 {review.reviewTitle}
               </h2>
-              <p className="text-white mb-3.5">"{review.detailedReview}"</p>
-              <h2 className="text-xl font-semibold">Other Metrics:</h2>
-              <p className="text-white">University: {review.university}</p>
-              <p className="text-white">Club: {review.clubName}</p>
-              <p className="text-white">Category: {review.category}</p>
-              <p className="text-white">Rating: {review.overallRating}/10</p>
-              <p className="text-white">Organization: {review.Organization}</p>
-              <p className="text-white">
-                Social Environment: {review.SocialEnvironment}
-              </p>
-              <p className="text-white">
-                Value for Money: {review.ValueForMoney}
-              </p>
-              <p className="text-white">Networking: {review.Networking}</p>
+              <p className="text-gray-700 my-4">"{review.detailedReview}"</p>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Other Metrics:</h3>
+                <p className="text-gray-800">University: {review.university}</p>
+                <p className="text-gray-800">Club: {review.clubName}</p>
+                <p className="text-gray-800">Category: {review.category}</p>
+                <p className="text-gray-800">
+                  Rating: {review.overallRating}/10
+                </p>
+                <p className="text-gray-800">
+                  Organization: {review.Organization}
+                </p>
+                <p className="text-gray-800">
+                  Social Environment: {review.SocialEnvironment}
+                </p>
+                <p className="text-gray-800">
+                  Value for Money: {review.ValueForMoney}
+                </p>
+                <p className="text-gray-800">Networking: {review.Networking}</p>
+              </div>
             </div>
           ))
         ) : (
@@ -149,7 +168,7 @@ export default function ExplorePage() {
         )}
       </main>
 
-      {/* Footer - Stuck to Bottom */}
+      {/* Footer */}
       <footer className="bg-gray-800 p-4 text-center mt-auto">
         <p className="text-gray-500 text-sm">
           &copy; {new Date().getFullYear()} RateMyClub. All rights reserved.

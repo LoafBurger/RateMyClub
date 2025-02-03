@@ -50,7 +50,7 @@ export default function Home() {
     },
     {
       title: "My Reviews",
-      description: "View and manage all your submitted reviews in one place.",
+      description: "View, edit, and delete all your submitted reviews in one place.",
       buttonText: "View Reviews",
       link: "my-reviews",
     },
