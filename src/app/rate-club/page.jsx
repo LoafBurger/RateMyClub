@@ -3,14 +3,7 @@ import { useState, useEffect } from "react";
 import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, addDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 
 export default function RateClub() {
@@ -109,14 +102,17 @@ export default function RateClub() {
     try {
       if (reviewId) {
         // Editing an existing review
-        await setDoc(doc(db, "approved-reviews", reviewId), {
+        await setDoc(doc(db, "reviews", reviewId), {
           userId: user.uid,
           userEmail: user.email,
           ...formData,
           timestamp: serverTimestamp(),
         });
 
-        alert("Review updated successfully!");
+        // Step 2: After the review is successfully updated, delete the old review from the "approved-reviews" collection
+        await deleteDoc(doc(db, "approved-reviews", reviewId));
+
+        alert("Review updated successfully - RMC admins will now review your edited submission!");
         router.push("/my-reviews"); // Redirect to "My Reviews" after editing
       } else {
         // Creating a new review
