@@ -9,9 +9,13 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 
 export default function MyReviews() {
   const [user, setUser] = useState(null);
@@ -51,6 +55,74 @@ export default function MyReviews() {
     }));
 
     setReviews(userReviews);
+  };
+
+    const handleVote = async (reviewId, voteType) => {
+    if (!user) {
+      alert("Please sign in to vote!");
+      return;
+    }
+
+    const reviewRef = doc(db, "approved-reviews", reviewId);
+    const reviewDoc = await getDoc(reviewRef);
+    const reviewData = reviewDoc.data();
+
+    // Initialize arrays if they don't exist
+    const likedBy = reviewData.likedBy || [];
+    const dislikedBy = reviewData.dislikedBy || [];
+    const userId = user.uid;
+
+    if (voteType === "like") {
+      if (likedBy.includes(userId)) {
+        // Remove like
+        await updateDoc(reviewRef, {
+          likedBy: arrayRemove(userId),
+          likes: (reviewData.likes || 0) - 1,
+        });
+      } else {
+        // Add like and remove dislike if exists
+        const updates = {
+          likedBy: arrayUnion(userId),
+          likes: (reviewData.likes || 0) + 1,
+        };
+
+        if (dislikedBy.includes(userId)) {
+          updates.dislikedBy = arrayRemove(userId);
+          updates.dislikes = (reviewData.dislikes || 0) - 1;
+        }
+
+        await updateDoc(reviewRef, updates);
+      }
+    } else {
+      if (dislikedBy.includes(userId)) {
+        // Remove dislike
+        await updateDoc(reviewRef, {
+          dislikedBy: arrayRemove(userId),
+          dislikes: (reviewData.dislikes || 0) - 1,
+        });
+      } else {
+        // Add dislike and remove like if exists
+        const updates = {
+          dislikedBy: arrayUnion(userId),
+          dislikes: (reviewData.dislikes || 0) + 1,
+        };
+
+        if (likedBy.includes(userId)) {
+          updates.likedBy = arrayRemove(userId);
+          updates.likes = (reviewData.likes || 0) - 1;
+        }
+
+        await updateDoc(reviewRef, updates);
+      }
+    }
+
+    // Refresh the specific review in the state
+    const updatedReviewDoc = await getDoc(reviewRef);
+    setReviews(reviews.map(review => 
+      review.id === reviewId 
+        ? { ...review, ...updatedReviewDoc.data() }
+        : review
+    ));
   };
 
   //Function to edit a review
@@ -132,21 +204,43 @@ export default function MyReviews() {
               key={review.id}
               className="bg-white p-6 rounded-lg shadow-lg mb-8 text-gray-900"
             >
-              <h2 className="text-2xl font-semibold underline text-[#00a6fb]">
-                {review.reviewTitle}
-              </h2>
+              <div className="flex justify-between items-start">
+                <h2 className="text-2xl font-semibold underline text-[#00a6fb]">
+                  {review.reviewTitle}
+                </h2>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => handleVote(review.id, "like")}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+                      review.likedBy?.includes(user?.uid)
+                        ? "bg-green-100 text-green-600"
+                        : "bg-gray-100 text-gray-600"
+                    } hover:bg-green-50 transition-colors`}
+                  >
+                    <ThumbsUp size={16} />
+                    <span>{review.likes || 0}</span>
+                  </button>
+                  <button
+                    onClick={() => handleVote(review.id, "dislike")}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+                      review.dislikedBy?.includes(user?.uid)
+                        ? "bg-red-100 text-red-600"
+                        : "bg-gray-100 text-gray-600"
+                    } hover:bg-red-50 transition-colors`}
+                  >
+                    <ThumbsDown size={16} />
+                    <span>{review.dislikes || 0}</span>
+                  </button>
+                </div>
+              </div>
               <p className="text-gray-700 my-4">"{review.detailedReview}"</p>
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Other Metrics:</h3>
                 <p className="text-gray-800">University: {review.university}</p>
                 <p className="text-gray-800">Club: {review.clubName}</p>
                 <p className="text-gray-800">Category: {review.category}</p>
-                <p className="text-gray-800">
-                  Rating: {review.overallRating}/10
-                </p>
-                <p className="text-gray-800">
-                  Organization: {review.Organization}
-                </p>
+                <p className="text-gray-800">Rating: {review.overallRating}/10</p>
+                <p className="text-gray-800">Organization: {review.Organization}</p>
                 <p className="text-gray-800">
                   Social Environment: {review.SocialEnvironment}
                 </p>
@@ -172,9 +266,7 @@ export default function MyReviews() {
             </div>
           ))
         ) : (
-          <p className="text-gray-400">
-            You haven't submitted any reviews yet.
-          </p>
+          <p className="text-gray-400">You haven't submitted any reviews yet.</p>
         )}
       </main>
 
