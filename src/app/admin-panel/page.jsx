@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/app/firebase/config";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import {
   collection,
   getDocs,
@@ -17,28 +17,44 @@ export default function AdminPanel() {
   const [userData, setUserData] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [editingReview, setEditingReview] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const checkAdminRole = async () => {
-      const user = auth.currentUser;
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        router.push("/"); // Redirect if user is not logged in
+        // User is not logged in
+        router.push("/");
+        setLoading(false);
         return;
       }
-      const userDoc = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userDoc);
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        if (data.role !== "admin") {
-          router.push("/"); // Redirect if user is not an admin
-        } else {
-          setUserData(data);
-          fetchReviews(); //Fetch only if the user is admin
+
+      try {
+        // User is logged in, check if they're an admin
+        const userDoc = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDoc);
+
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          if (data.role === "admin") {
+            // User is an admin
+            setUserData(data);
+            fetchReviews();
+          } else {
+            // User is not an admin
+            router.push("/");
+          }
         }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        router.push("/");
+      } finally {
+        setLoading(false);
       }
-    };
-    checkAdminRole();
+    });
+
+    // Cleanup subscription
+    return () => unsubscribe();
   }, [router]);
 
   const fetchReviews = async () => {
@@ -110,8 +126,12 @@ export default function AdminPanel() {
     }
   };
 
-  if (!userData) {
-    return <div>Loading...</div>; // Show loading state while checking the role
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
   }
 
   return (
