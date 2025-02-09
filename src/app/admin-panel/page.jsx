@@ -261,7 +261,7 @@ export default function AdminPanel() {
                     onClick={() => handleEdit(review)}
                     className="px-6 py-2 bg-yellow-600 rounded-full hover:bg-yellow-500 transition duration-300"
                   >
-                    Edit Names
+                    Edit Review
                   </button>
                 )}
                 <button
