@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { motion } from "framer-motion";
-
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -68,7 +66,6 @@ export default function Home() {
   };
 
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration: 0.5}}>
     <div className="min-h-screen flex flex-col bg-white">
       {/* Hero Header */}
       <header className="bg-[#00a6fb] p-4">
@@ -229,6 +226,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-    </motion.div>
   );
 }
