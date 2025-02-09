@@ -36,7 +36,7 @@ export default function Home() {
     {
       title: "Rate a Club",
       description:
-        "Share your thoughts and rate your favorite clubs to help the community.",
+        "Share your thoughts and rate your favorite clubs from your university to help the community.",
       buttonText: "Rate Now",
       link: "/rate-club", // Add the link to the rating page
     },
@@ -44,9 +44,9 @@ export default function Home() {
     {
       title: "Explore Clubs",
       description:
-        "Browse through a list of clubs and see what others have to say.",
+        "Browse through a list of clubs from any university and see what others have to say.",
       buttonText: "Explore",
-      link: "explore-page",
+      link: "universities-page",
     },
     {
       title: "My Reviews",

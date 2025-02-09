@@ -3,12 +3,20 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/app/firebase/config";
 import { signOut } from "firebase/auth";
-import { collection, getDocs, doc, getDoc, deleteDoc, setDoc,
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  deleteDoc,
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 export default function AdminPanel() {
   const [userData, setUserData] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [editingReview, setEditingReview] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -67,6 +75,31 @@ export default function AdminPanel() {
     fetchReviews();
   };
 
+  const handleEdit = (review) => {
+    setEditingReview({
+      ...review,
+      newUniversity: review.university,
+      newClubName: review.clubName,
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      // Update the review in the reviews collection
+      const reviewRef = doc(db, "reviews", editingReview.id);
+      await updateDoc(reviewRef, {
+        university: editingReview.newUniversity,
+        clubName: editingReview.newClubName,
+      });
+
+      // Refresh the reviews list
+      fetchReviews();
+      setEditingReview(null);
+    } catch (error) {
+      console.error("Error updating review:", error);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -81,7 +114,7 @@ export default function AdminPanel() {
     return <div>Loading...</div>; // Show loading state while checking the role
   }
 
-return (
+  return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-white">
       {/* Header */}
       <header className="bg-[#00a6fb] p-4 shadow-lg">
@@ -125,33 +158,99 @@ return (
 
       {/* Content */}
       <main className="flex-grow container mx-auto px-4 py-20 -mt-10 relative z-10">
-        <h1 className="text-4xl font-bold mb-8 text-[#00a6fb]">Pending Reviews</h1>
+        <h1 className="text-4xl font-bold mb-8 text-[#00a6fb]">
+          Pending Reviews
+        </h1>
 
         {reviews.length > 0 ? (
           reviews.map((review) => (
-            <div key={review.id} className="bg-gray-800 p-6 rounded-lg shadow-md mb-8">
+            <div
+              key={review.id}
+              className="bg-gray-800 p-6 rounded-lg shadow-md mb-8"
+            >
               <h2 className="text-2xl font-semibold text-[#00a6fb] underline mb-4">
                 {review.reviewTitle}
               </h2>
               <p className="text-gray-400 mb-4">"{review.detailedReview}"</p>
               <div className="space-y-2 text-gray-400">
-                <p>University: {review.university}</p>
-                <p>Club: {review.clubName}</p>
+                {editingReview?.id === review.id ? (
+                  <div className="space-y-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        University Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={editingReview.newUniversity}
+                        onChange={(e) =>
+                          setEditingReview({
+                            ...editingReview,
+                            newUniversity: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#00a6fb]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Club Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={editingReview.newClubName}
+                        onChange={(e) =>
+                          setEditingReview({
+                            ...editingReview,
+                            newClubName: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#00a6fb]"
+                      />
+                    </div>
+                    <div className="flex space-x-4">
+                      <button
+                        onClick={handleSaveEdit}
+                        className="px-4 py-2 bg-green-600 rounded-full hover:bg-green-500 transition duration-300 text-white"
+                      >
+                        Save Changes
+                      </button>
+                      <button
+                        onClick={() => setEditingReview(null)}
+                        className="px-4 py-2 bg-gray-600 rounded-full hover:bg-gray-500 transition duration-300 text-white"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p>University: {review.university}</p>
+                    <p>Club: {review.clubName}</p>
+                  </>
+                )}
                 <p>Category: {review.category}</p>
                 <p>Rating: {review.overallRating}/10</p>
               </div>
 
-              {/* Approve and Deny Buttons */}
+              {/* Action Buttons */}
               <div className="flex space-x-4 mt-6">
+                {editingReview?.id !== review.id && (
+                  <button
+                    onClick={() => handleEdit(review)}
+                    className="px-6 py-2 bg-yellow-600 rounded-full hover:bg-yellow-500 transition duration-300"
+                  >
+                    Edit Names
+                  </button>
+                )}
                 <button
                   onClick={() => handleApprove(review)}
-                  className="px-6 py-2 bg-[#00a6fb] rounded-full hover:bg-blue-600 transition duration-300 text-white"
+                  className="px-6 py-2 bg-[#00a6fb] rounded-full hover:bg-blue-600 transition duration-300"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => handleDeny(review)}
-                  className="px-6 py-2 bg-red-600 rounded-full hover:bg-red-500 transition duration-300 text-white"
+                  className="px-6 py-2 bg-red-600 rounded-full hover:bg-red-500 transition duration-300"
                 >
                   Deny
                 </button>
@@ -159,7 +258,9 @@ return (
             </div>
           ))
         ) : (
-          <p className="text-gray-400">No pending reviews need to be approved...</p>
+          <p className="text-gray-400">
+            No pending reviews need to be approved...
+          </p>
         )}
       </main>
 
