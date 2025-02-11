@@ -1,11 +1,11 @@
 "use client";
 import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged, signOut } from "firebase/auth";  //used to monitor user logging in and out (user state), just helps with signing out of a user
+import { useState, useEffect } from "react";  //useState just manages states of stuff, useEffect handles side effects of the application
+import { doc, getDoc } from "firebase/firestore"; //doc is to create a reference (not actually get the data) to a document on Firestore, getDoc is to actually get the data
 
-export default function Home() {
+export default function Home() {  //react component
   const [user, setUser] = useState(null);
   const router = useRouter();
   const [userData, setUserData] = useState(null);
@@ -14,7 +14,7 @@ export default function Home() {
 
   //check auth state on mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => { //remember, use async/await to ensure that data is fetched before updating component state. Inside the onAuthStateChanged callback, you're waiting (await) for the result of getDoc to fetch user data from Firestore, if the currentUser exists.
       setUser(currentUser);
       if (currentUser) {
         // Fetch user data
@@ -27,8 +27,8 @@ export default function Home() {
         }
       }
     });
-    return () => unsubscribe();
-  }, []);
+    return () => unsubscribe(); //cleanup function that helps with cleaning up any side effects
+  }, []); //empty array means the useEffect runs once when the component loads
 
   const cards = [
     {
