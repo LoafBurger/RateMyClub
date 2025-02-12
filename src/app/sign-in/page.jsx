@@ -116,9 +116,15 @@ const SignIn = () => {
         </button>
         <button
           onClick={handleGoogleSignIn}
-          className="w-full p-4 mt-4 bg-[#4285F4] text-white rounded-full hover:bg-[#357ae8] transition duration-300"
+          className="w-full mt-4 p-4 bg-blue-600 text-white rounded-full flex items-center justify-center gap-2 hover:bg-blue-950 transition duration-300"
         >
-          Sign In with Google
+          <img
+            className="w-6 h-6"
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            loading="lazy"
+            alt="google logo"
+          />
+          <span>Sign In with Google</span>
         </button>
         <p className="text-gray-500 mt-6 text-center">
           Don't have an account?{" "}
