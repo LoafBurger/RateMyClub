@@ -3,8 +3,17 @@ import { useState, useEffect } from "react";
 import { auth, db } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, setDoc, collection, addDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  addDoc,
+  serverTimestamp,
+  deleteDoc,
+} from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
+import { universities } from "@/app/data/universities";
 
 export default function RateClub() {
   const [user, setUser] = useState(null);
@@ -112,7 +121,9 @@ export default function RateClub() {
         // Step 2: After the review is successfully updated, delete the old review from the "approved-reviews" collection
         await deleteDoc(doc(db, "approved-reviews", reviewId));
 
-        alert("Review updated successfully - RMC admins will now review your edited submission!");
+        alert(
+          "Review updated successfully - RMC admins will now review your edited submission!",
+        );
         router.push("/my-reviews"); // Redirect to "My Reviews" after editing
       } else {
         // Creating a new review
@@ -225,16 +236,26 @@ export default function RateClub() {
 
           {/* Club Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <label className="block mb-2 text-black">University Name</label>
               <input
                 type="text"
                 name="university"
                 value={formData.university}
                 onChange={handleChange}
+                list="universities"
                 className="w-full p-3 rounded bg-gray-200 text-black"
+                placeholder="Search or type university name..."
                 required
               />
+              <datalist id="universities">
+                {universities.map((university, index) => (
+                  <option key={index} value={university} />
+                ))}
+              </datalist>
+              <div className="text-xs text-gray-500 mt-1">
+                Can't find your university? Type it manually!
+              </div>
             </div>
 
             <div className="mb-4">
