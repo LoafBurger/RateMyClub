@@ -12,23 +12,22 @@ export default function UniversitiesPage() {
   const [universities, setUniversities] = useState([]);
   const router = useRouter();
 
-
   // Fetch unique universities from approved-reviews
   const fetchUniversities = async () => {
     try {
       const reviewsRef = collection(db, "approved-reviews");
       const querySnapshot = await getDocs(reviewsRef);
-      
+
       // Create a Set to store unique university names
       const uniqueUniversities = new Set();
-      
+
       querySnapshot.forEach((doc) => {
         const reviewData = doc.data();
         if (reviewData.university) {
           uniqueUniversities.add(reviewData.university);
         }
       });
-      
+
       // Convert Set to sorted array
       const universitiesArray = Array.from(uniqueUniversities).sort();
       setUniversities(universitiesArray);
@@ -36,7 +35,6 @@ export default function UniversitiesPage() {
       console.error("Error fetching universities:", error);
     }
   };
-
 
   //check auth state on mount
   useEffect(() => {
@@ -125,10 +123,14 @@ export default function UniversitiesPage() {
                 {university}
               </h3>
               <button
-                onClick={() => router.push(`/university-reviews?university=${encodeURIComponent(university)}`)}
+                onClick={() =>
+                  router.push(
+                    `/university-clubs?university=${encodeURIComponent(university)}`,
+                  )
+                }
                 className="mt-4 text-sm text-[#00a6fb] hover:text-blue-700 font-medium"
               >
-                View Reviews →
+                View Clubs →
               </button>
             </div>
           ))}

@@ -1,7 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import { collection, getDocs, doc, getDoc, query, where, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";  //arrayUnion and arrayRemove are utility functions to add and remove elements from a Firestore document. In this case, used for adding likes and dislikes values.
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore"; //arrayUnion and arrayRemove are utility functions to add and remove elements from a Firestore document. In this case, used for adding likes and dislikes values.
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -24,7 +34,8 @@ export default function UniversityReviews() {
     }
   }, [searchParams]); //this means this effect will run when the component is loaded and when searchParams changes.
 
-  useEffect(() => { //useEffect to handle getting user data
+  useEffect(() => {
+    //useEffect to handle getting user data
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -41,12 +52,25 @@ export default function UniversityReviews() {
     return () => unsubscribe();
   }, []);
 
+  // In the UniversityReviews component, update the useEffect that fetches reviews:
+
   useEffect(() => {
     const fetchReviews = async () => {
       if (!universityName) return;
 
       const reviewsRef = collection(db, "approved-reviews");
-      const q = query(reviewsRef, where("university", "==", universityName));
+      let q = query(reviewsRef, where("university", "==", universityName));
+
+      // Get club from URL parameters
+      const clubName = searchParams.get("club");
+      if (clubName) {
+        q = query(
+          reviewsRef,
+          where("university", "==", universityName),
+          where("clubName", "==", decodeURIComponent(clubName)),
+        );
+      }
+
       const querySnapshot = await getDocs(q);
 
       const fetchedReviews = querySnapshot.docs.map((doc) => ({
@@ -58,7 +82,7 @@ export default function UniversityReviews() {
     };
 
     fetchReviews();
-  }, [universityName]); //this means the effect will run when the university selected has changed
+  }, [universityName, searchParams]); // Add searchParams to dependencies
 
   const handleVote = async (reviewId, voteType) => {
     if (!user) {
@@ -201,7 +225,7 @@ export default function UniversityReviews() {
             Browse through club reviews at {universityName}
           </p>
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push("/universities-page")}
             className="bg-white text-[#00a6fb] px-6 py-2 rounded-full hover:bg-blue-50 transition duration-300"
           >
             ← Back to Universities
