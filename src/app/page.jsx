@@ -1,6 +1,6 @@
 "use client";
-import { auth, db } from "@/app/firebase/config";
-import { useRouter } from "next/navigation";
+import { auth, db } from "@/app/firebase/config"; //getting auth object using getAuth from config, getting db object using getFirestore from config
+import { useRouter } from "next/navigation";  //routing for pushing to other pages
 import { onAuthStateChanged, signOut } from "firebase/auth";  //used to monitor user logging in and out (user state), just helps with signing out of a user
 import { useState, useEffect } from "react";  //useState just manages states of stuff, useEffect handles side effects of the application
 import { doc, getDoc } from "firebase/firestore"; //doc is to create a reference (not actually get the data) to a document on Firestore, getDoc is to actually get the data
@@ -55,7 +55,7 @@ export default function Home() {  //react component
     },
   ];
 
-  const handleLogout = async () => {
+  const handleLogout = async () => {  //function to handle logging out for onclick buttons
     try {
       await signOut(auth);
       // Redirect to home page after sign out

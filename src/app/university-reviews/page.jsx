@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/firebase/config";
-import { collection, getDocs, doc, getDoc, query, where, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, where, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";  //arrayUnion and arrayRemove are utility functions to add and remove elements from a Firestore document. In this case, used for adding likes and dislikes values.
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -17,14 +17,14 @@ export default function UniversityReviews() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Get university name from URL
+    // Get university name from URL, this is to decide what universities to display
     const university = searchParams.get("university");
     if (university) {
       setUniversityName(decodeURIComponent(university));
     }
-  }, [searchParams]);
+  }, [searchParams]); //this means this effect will run when the component is loaded and when searchParams changes.
 
-  useEffect(() => {
+  useEffect(() => { //useEffect to handle getting user data
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -58,7 +58,7 @@ export default function UniversityReviews() {
     };
 
     fetchReviews();
-  }, [universityName]);
+  }, [universityName]); //this means the effect will run when the university selected has changed
 
   const handleVote = async (reviewId, voteType) => {
     if (!user) {
