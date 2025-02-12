@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth, db } from "@/app/firebase/config";
-import { doc, setDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
+import { auth, db, googleProvider } from "@/app/firebase/config";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { signInWithPopup, signOut } from "firebase/auth";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,15 @@ const SignUp = () => {
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth); //return array
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // If user needs to sign up, make sure they're signed out
+    const needSignUp = searchParams.get("need-sign-up");
+    if (needSignUp === "true") {
+      signOut(auth);
+    }
+  }, [searchParams]);
 
   const handleSignUp = async () => {
     if (!email || !password) {
@@ -53,6 +63,43 @@ const SignUp = () => {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res?.user) {
+        const userDoc = doc(db, "users", res.user.uid);
+        const userSnapshot = await getDoc(userDoc);
+
+        if (userSnapshot.exists()) {
+          await signOut(auth);
+          setError(
+            "This Google account is already registered. Please sign in instead.",
+          );
+          return;
+        }
+
+        await setDoc(userDoc, {
+          uid: res.user.uid,
+          email: res.user.email,
+          createdAt: new Date().toISOString(),
+        });
+
+        router.push("/");
+      }
+    } catch (e) {
+      if (e.code === "auth/popup-closed-by-user") {
+        // Don't log this error since it's an expected user action
+        setError(
+          "Google sign up was cancelled. Please try again if you want to sign up with Google.",
+        );
+      } else {
+        // Only log unexpected errors
+        console.error("Google sign up error:", e);
+        setError("Error with Google Sign Up. Please try again.");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
       <h1 className="text-white text-4xl font-bold mb-8 flex items-center gap-2">
@@ -80,6 +127,12 @@ const SignUp = () => {
           className="w-full p-4 bg-[#00a6fb] text-white rounded-full hover:bg-blue-600 transition duration-300"
         >
           Sign Up
+        </button>
+        <button
+          onClick={handleGoogleSignUp}
+          className="w-full p-4 mt-4 bg-[#4285F4] text-white rounded-full hover:bg-[#357ae8] transition duration-300"
+        >
+          Sign Up with Google
         </button>
         <p className="text-gray-500 mt-6 text-center">
           Already have an account?{" "}

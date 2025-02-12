@@ -1,17 +1,42 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "@/app/firebase/config";
-import { useRouter } from "next/navigation";
+import { auth, googleProvider, db } from "@/app/firebase/config";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { signInWithPopup, signOut } from "firebase/auth"; // Import signInWithPopup from firebase/auth
+import { doc, getDoc } from "firebase/firestore"; // To get the user document
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); //To show validation or API errors
-  //test account, testtest123
+  //test account, testtest123, testtest123314
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter(); //reroute user after sign-in
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const needSignOut = searchParams.get("need-sign-up");
+
+    // If redirected from failed Google sign-in, sign out
+    if (needSignOut === "true") {
+      signOut(auth);
+    } else {
+      // Only check auth state if not redirected from failed sign-in
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            router.push("/");
+          }
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [router, searchParams]);
 
   const handleSignIn = async () => {
     setError("");
@@ -32,6 +57,32 @@ const SignIn = () => {
     } catch (e) {
       console.error(e);
       setError("Invalid email or password. Please Try again.");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res?.user) {
+        const userDocRef = doc(db, "users", res.user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+          await signOut(auth);
+          router.push("/sign-up?need-sign-up=true");
+        } else {
+          router.push("/");
+        }
+      }
+    } catch (e) {
+      if (e.code === "auth/popup-closed-by-user") {
+        setError(
+          "Google sign in was cancelled. Please try again if you want to sign in with Google.",
+        );
+      } else {
+        // Only log unexpected errors
+        console.error("Google sign-in error: ", e);
+        setError("Error with Google Sign In. Please try again.");
+      }
     }
   };
 
@@ -62,6 +113,12 @@ const SignIn = () => {
           className="w-full p-4 bg-[#00a6fb] text-white rounded-full hover:bg-blue-600 transition duration-300"
         >
           Sign In
+        </button>
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full p-4 mt-4 bg-[#4285F4] text-white rounded-full hover:bg-[#357ae8] transition duration-300"
+        >
+          Sign In with Google
         </button>
         <p className="text-gray-500 mt-6 text-center">
           Don't have an account?{" "}
