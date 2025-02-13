@@ -53,7 +53,7 @@ const SignIn = () => {
       }
       setEmail("");
       setPassword("");
-      router.push("/");
+      router.push("/?signed_in=true"); // Updated line
     } catch (e) {
       console.error(e);
       setError("Invalid email or password. Please Try again.");
@@ -70,7 +70,7 @@ const SignIn = () => {
           await signOut(auth);
           router.push("/sign-up?need-sign-up=true");
         } else {
-          router.push("/");
+          router.push("/?signed_in=true"); // Updated line
         }
       }
     } catch (e) {

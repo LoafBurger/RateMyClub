@@ -1,6 +1,6 @@
 "use client";
 import { auth, db } from "@/app/firebase/config"; //getting auth object using getAuth from config, getting db object using getFirestore from config
-import { useRouter } from "next/navigation"; //routing for pushing to other pages
+import { useRouter, useSearchParams } from "next/navigation"; //routing for pushing to other pages
 import { onAuthStateChanged, signOut } from "firebase/auth"; //used to monitor user logging in and out (user state), just helps with signing out of a user
 import { useState, useEffect } from "react"; //useState just manages states of stuff, useEffect handles side effects of the application
 import { doc, getDoc } from "firebase/firestore"; //doc is to create a reference (not actually get the data) to a document on Firestore, getDoc is to actually get the data
@@ -11,8 +11,30 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const router = useRouter();
   const [userData, setUserData] = useState(null);
+  const [toastConfig, setToastConfig] = useState({
+    show: false,
+    message: "",
+  });
+  const searchParams = useSearchParams();
 
   console.log(user);
+
+  useEffect(() => {
+    // Check if user just signed in
+    const justSignedIn = searchParams.get("signed_in");
+    if (justSignedIn === "true") {
+      setToastConfig({
+        show: true,
+        message: "Successfully signed in!",
+      });
+      setTimeout(() => {
+        setToastConfig({
+          show: false,
+          message: "",
+        });
+      }, 2000);
+    }
+  }, [searchParams]);
 
   //check auth state on mount
   useEffect(() => {
@@ -59,11 +81,19 @@ export default function Home() {
   ];
 
   const handleLogout = async () => {
-    //function to handle logging out for onclick buttons
     try {
       await signOut(auth);
-      // Redirect to home page after sign out
-      router.push("/");
+      setToastConfig({
+        show: true,
+        message: "Successfully logged out!",
+      });
+      setTimeout(() => {
+        setToastConfig({
+          show: false,
+          message: "",
+        });
+        router.push("/");
+      }, 2000);
     } catch (error) {
       console.error("Error signing out: ", error);
     }
@@ -71,6 +101,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      {/* New Logout Toast - now at the top */}
+      <div
+        className={`fixed top-0 left-0 right-0 transform ${toastConfig.show ? "translate-y-0" : "-translate-y-full"
+          } transition-transform duration-300 ease-in-out z-50`}
+      >
+        <div className="flex items-center justify-center p-4">
+          <div className="bg-black text-white px-8 py-4 rounded-full shadow-lg flex items-center space-x-2">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span className="font-medium">{toastConfig.message}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Header */}
       <header className="bg-[#00a6fb] p-4">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
