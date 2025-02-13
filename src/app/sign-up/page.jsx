@@ -70,7 +70,7 @@ const SignUp = () => {
         const userDoc = doc(db, "users", res.user.uid);
         const userSnapshot = await getDoc(userDoc);
 
-        if (userSnapshot.exists()) {
+        if (userSnapshot.exists()) {  //if the account already exists
           await signOut(auth);
           setError(
             "This Google account is already registered. Please sign in instead.",

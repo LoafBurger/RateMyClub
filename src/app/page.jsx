@@ -1,11 +1,13 @@
 "use client";
 import { auth, db } from "@/app/firebase/config"; //getting auth object using getAuth from config, getting db object using getFirestore from config
-import { useRouter } from "next/navigation";  //routing for pushing to other pages
-import { onAuthStateChanged, signOut } from "firebase/auth";  //used to monitor user logging in and out (user state), just helps with signing out of a user
-import { useState, useEffect } from "react";  //useState just manages states of stuff, useEffect handles side effects of the application
+import { useRouter } from "next/navigation"; //routing for pushing to other pages
+import { onAuthStateChanged, signOut } from "firebase/auth"; //used to monitor user logging in and out (user state), just helps with signing out of a user
+import { useState, useEffect } from "react"; //useState just manages states of stuff, useEffect handles side effects of the application
 import { doc, getDoc } from "firebase/firestore"; //doc is to create a reference (not actually get the data) to a document on Firestore, getDoc is to actually get the data
+import ClubReviewSection from "@/components/ClubReviewSection";
 
-export default function Home() {  //react component
+export default function Home() {
+  //react component
   const [user, setUser] = useState(null);
   const router = useRouter();
   const [userData, setUserData] = useState(null);
@@ -14,7 +16,8 @@ export default function Home() {  //react component
 
   //check auth state on mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => { //remember, use async/await to ensure that data is fetched before updating component state. Inside the onAuthStateChanged callback, you're waiting (await) for the result of getDoc to fetch user data from Firestore, if the currentUser exists.
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      //remember, use async/await to ensure that data is fetched before updating component state. Inside the onAuthStateChanged callback, you're waiting (await) for the result of getDoc to fetch user data from Firestore, if the currentUser exists.
       setUser(currentUser);
       if (currentUser) {
         // Fetch user data
@@ -55,7 +58,8 @@ export default function Home() {  //react component
     },
   ];
 
-  const handleLogout = async () => {  //function to handle logging out for onclick buttons
+  const handleLogout = async () => {
+    //function to handle logging out for onclick buttons
     try {
       await signOut(auth);
       // Redirect to home page after sign out
@@ -215,10 +219,20 @@ export default function Home() {  //react component
         </div>
       </main>
 
+      <ClubReviewSection />
+
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-gray-200 py-8">
         <div className="container mx-auto px-4">
-          <div className="text-center">
+          <div className="text-center space-y-4">
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => router.push("/about")}
+                className="text-gray-600 hover:text-[#00a6fb] transition duration-300"
+              >
+                About
+              </button>
+            </div>
             <p className="text-gray-600">
               &copy; {new Date().getFullYear()} RateMyClub. All rights reserved.
             </p>
